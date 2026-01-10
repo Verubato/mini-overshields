@@ -1,0 +1,10 @@
+## Interface: 120001, 120000, 110207, 50503
+## Title: MiniOvershields
+## Notes: Shows overshields/absorbs on unit, player, and target frames.
+## Author: Verz
+## Version: 0.0.1
+## IconTexture: Interface\AddOns\MiniOvershields\Icon.blp
+## X-Curse-Project-ID: 1429179
+
+MiniFramework.lua
+MiniOvershields.lua
