@@ -154,6 +154,14 @@ function M:ClampInt(v, minV, maxV, fallback)
 	return v
 end
 
+function M:IsSecret(value)
+	if not issecretvalue then
+		return false
+	end
+
+	return issecretvalue(value)
+end
+
 function M:CanOpenOptionsDuringCombat()
 	if LE_EXPANSION_LEVEL_CURRENT == nil or LE_EXPANSION_MIDNIGHT == nil then
 		return true
