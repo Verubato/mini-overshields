@@ -1,8 +1,38 @@
-local _, addon = ...
+local addonName, addon = ...
 ---@type MiniFramework
 local mini = addon.Framework
 local containers = {}
 local eventsFrame
+local texturesRoot = "Interface\\AddOns\\" .. addonName .. "\\Textures\\"
+local overlayTexturePath = texturesRoot .. "RaidFrameShieldOverlay.BLP"
+
+local function GetOvershieldAmount(unit)
+	if CreateUnitHealPredictionCalculator then
+		-- there's currently no way to get the overshield amount using this new API
+		-- so we'll just have to always show an overshield amount unfortunately
+		local calculator = CreateUnitHealPredictionCalculator()
+		calculator:SetDamageAbsorbClampMode(Enum.UnitDamageAbsorbClampMode.MaximumHealth)
+
+		UnitGetDetailedHealPrediction(unit, unit, calculator)
+
+		local absorbsOverMaxHp, _ = calculator:GetDamageAbsorbs()
+		return absorbsOverMaxHp, true
+	else
+		local unitHealth = UnitHealth(unit)
+		local maxHealth = UnitHealthMax(unit) or 0
+		local absorbs = UnitGetTotalAbsorbs(unit) or 0
+
+		if mini:IsSecret(unitHealth) or mini:IsSecret(maxHealth) or mini:IsSecret(absorbs) then
+			-- shouldn't happen, as this only happens in Midnight in which case we would have used the calculator
+			return false
+		end
+
+		local missing = maxHealth - unitHealth
+		local overshields = absorbs - missing
+
+		return overshields, overshields > 0
+	end
+end
 
 local function RaiseChildrenAboveAbsorb(unitFrame, absorbBar)
 	if unitFrame:IsForbidden() then
@@ -34,14 +64,27 @@ local function EnsureContainer(healthBar)
 	local container = {}
 	local absorbBar = CreateFrame("StatusBar", nil, healthBar)
 	absorbBar:SetAllPoints(healthBar)
-	absorbBar:SetStatusBarTexture("Interface\\RaidFrame\\Absorb-Fill")
 	absorbBar:SetReverseFill(true)
 	absorbBar:SetMinMaxValues(0, 1)
+	-- make it invisible
+	absorbBar:SetStatusBarTexture(0, 0, 0, 0)
 	absorbBar:SetValue(0)
-	--absorbBar:SetStatusBarColor(0, 0, 0, 0.9)
-	absorbBar:Hide()
+	-- show so our absorb texture also shows
+	absorbBar:Show()
+
+	local absorbTexture = absorbBar:GetStatusBarTexture()
+
+	local overlay = absorbBar:CreateTexture(nil, "OVERLAY")
+	overlay:SetPoint("TOPRIGHT", absorbTexture, "TOPRIGHT")
+	overlay:SetPoint("BOTTOMLEFT", absorbTexture, "BOTTOMLEFT")
+
+	-- enable repeat tiling so the pattern doesn't stretch
+	overlay:SetTexture(overlayTexturePath, "REPEAT", "REPEAT")
+	overlay:SetHorizTile(true)
+	overlay:SetVertTile(true)
 
 	container.Absorb = absorbBar
+	container.Overlay = overlay
 	containers[healthBar] = container
 
 	return container
@@ -59,11 +102,20 @@ local function UpdateOverlayForUnit(healthBar, unit)
 	end
 
 	local maxHealth = UnitHealthMax(unit) or 0
-	local absorbs = UnitGetTotalAbsorbs(unit) or 0
+	local overshield, hasOvershield = GetOvershieldAmount(unit)
 
 	container.Absorb:SetMinMaxValues(0, maxHealth)
-	container.Absorb:SetValue(absorbs)
-	container.Absorb:Show()
+	container.Absorb:SetValue(overshield)
+
+	if mini:IsSecret(hasOvershield) then
+		container.Absorb:SetAlphaFromBoolean(hasOvershield, 1, 0)
+	else
+		if hasOvershield then
+			container.Absorb:Show()
+		else
+			container.Absorb:Hide()
+		end
+	end
 end
 
 local function GetBlizzardUnitHealthBar(unit)
