@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+Fixed absorbs showing on Blizzard nameplates as it didn't look good.
+
 ## 1.2.0
 
 Edge glow now moves with absorb overlay.
