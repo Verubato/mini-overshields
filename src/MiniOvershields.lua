@@ -1,6 +1,8 @@
 local addonName, addon = ...
 ---@type MiniFramework
 local mini = addon.Framework
+---@type Scheduler
+local scheduler = addon.Scheduler
 local containers = {}
 local eventsFrame
 local texturesRoot = "Interface\\AddOns\\" .. addonName .. "\\Textures\\"
@@ -34,6 +36,27 @@ local function GetOvershieldAmount(unit)
 	end
 end
 
+local function ReanchorOverAbsorbGlow(unitFrame, absorbOverlay)
+	local glow = unitFrame.overAbsorbGlow
+
+	-- https://github.com/Gethe/wow-ui-source/blob/a29cc452e9c3d86b40ff7cc1024eb36ed8306cdd/Interface/AddOns/Blizzard_UnitFrame/Mainline/UnitFrame.lua#L29
+	if glow and not glow:IsForbidden() then
+		glow:ClearAllPoints()
+		glow:SetPoint("TOP", absorbOverlay, "TOP", 0, 0)
+		glow:SetPoint("BOTTOM", absorbOverlay, "BOTTOM", 0, 0)
+		glow:SetPoint("LEFT", absorbOverlay, "LEFT", -7, 0)
+	end
+
+	local healGlow = unitFrame.overHealAbsorbGlow
+
+	if healGlow and not healGlow:IsForbidden() then
+		healGlow:ClearAllPoints()
+		healGlow:SetPoint("TOP", absorbOverlay, "TOP", 0, 0)
+		healGlow:SetPoint("BOTTOM", absorbOverlay, "BOTTOM", 0, 0)
+		healGlow:SetPoint("LEFT", absorbOverlay, "LEFT", -7, 0)
+	end
+end
+
 local function RaiseChildrenAboveAbsorb(unitFrame, absorbBar)
 	if unitFrame:IsForbidden() then
 		return
@@ -56,14 +79,14 @@ local function RaiseChildrenAboveAbsorb(unitFrame, absorbBar)
 	end
 end
 
-local function EnsureContainer(healthBar)
-	if containers[healthBar] then
-		return containers[healthBar]
+local function EnsureContainer(unitFrame)
+	if containers[unitFrame] then
+		return containers[unitFrame]
 	end
 
 	local container = {}
-	local absorbBar = CreateFrame("StatusBar", nil, healthBar)
-	absorbBar:SetAllPoints(healthBar)
+	local absorbBar = CreateFrame("StatusBar", nil, unitFrame)
+	absorbBar:SetAllPoints(unitFrame)
 	absorbBar:SetReverseFill(true)
 	absorbBar:SetMinMaxValues(0, 1)
 	-- make it invisible
@@ -85,17 +108,17 @@ local function EnsureContainer(healthBar)
 
 	container.Absorb = absorbBar
 	container.Overlay = overlay
-	containers[healthBar] = container
+	containers[unitFrame] = container
 
 	return container
 end
 
-local function UpdateOverlayForUnit(healthBar, unit)
+local function UpdateOverlayForUnit(frame, unit)
 	if not UnitExists(unit) then
 		return
 	end
 
-	local container = EnsureContainer(healthBar)
+	local container = EnsureContainer(frame)
 
 	if not container then
 		return
@@ -178,13 +201,17 @@ local function UpdateCompactFrame(frame)
 		return
 	end
 
-	local hb = frame.healthBar or frame.HealthBar
+	UpdateOverlayForUnit(frame, unit)
 
-	if not hb then
+	local container = containers[frame] or EnsureContainer(frame)
+
+	if not container then
 		return
 	end
 
-	UpdateOverlayForUnit(hb, unit)
+	scheduler:RunWhenCombatEnds(function()
+		ReanchorOverAbsorbGlow(frame, container.Overlay)
+	end, frame:GetName())
 end
 
 local function HookCompactAuras()
@@ -194,13 +221,7 @@ local function HookCompactAuras()
 				return
 			end
 
-			local hb = frame.healthBar or frame.HealthBar
-
-			if not hb then
-				return
-			end
-
-			local container = containers[hb] or EnsureContainer(hb)
+			local container = containers[frame] or EnsureContainer(frame)
 
 			if container then
 				RaiseChildrenAboveAbsorb(frame, container.Absorb)
@@ -214,13 +235,7 @@ local function HookCompactAuras()
 				return
 			end
 
-			local hb = frame.healthBar or frame.HealthBar
-
-			if not hb then
-				return
-			end
-
-			local container = containers[hb] or EnsureContainer(hb)
+			local container = containers[frame] or EnsureContainer(frame)
 
 			if container then
 				RaiseChildrenAboveAbsorb(frame, container.Absorb)
@@ -250,6 +265,8 @@ local function OnEvent()
 end
 
 local function OnAddonLoaded()
+	addon.Scheduler:Init()
+
 	eventsFrame = CreateFrame("Frame")
 	eventsFrame:RegisterEvent("PLAYER_LOGIN")
 	eventsFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
