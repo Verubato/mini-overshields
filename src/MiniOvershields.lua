@@ -201,6 +201,11 @@ local function UpdateCompactFrame(frame)
 		return
 	end
 
+	-- don't show on nameplates as it looks wonky
+	if string.find(unit, "nameplate") ~= nil then
+		return
+	end
+
 	UpdateOverlayForUnit(frame, unit)
 
 	local container = containers[frame] or EnsureContainer(frame)
