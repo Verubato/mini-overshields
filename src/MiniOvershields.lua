@@ -32,9 +32,8 @@ local function EnsureContainer(unitFrame, healthBar, overAbsorbGlow)
 	absorb:SetAllPoints(healthBar)
 	absorb:SetReverseFill(true)
 	absorb:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Overlay")
-	-- put it above the health bar
-	absorb:SetFrameLevel(healthBar:GetFrameLevel() + 1)
-	-- draw behind other artifacts such as the frame selected border
+	-- don't draw above the health bar
+	absorb:SetFrameLevel(healthBar:GetFrameLevel())
 	absorb:SetFrameStrata(healthBar:GetFrameStrata())
 	absorb:SetStatusBarColor(1, 1, 1, 0.5)
 	absorb:Hide()
@@ -43,14 +42,8 @@ local function EnsureContainer(unitFrame, healthBar, overAbsorbGlow)
 	texture:SetTexture("Interface\\RaidFrame\\Shield-Overlay", "REPEAT", "REPEAT")
 	texture:SetHorizTile(true)
 	texture:SetVertTile(true)
-
-	local unit = unitFrame.unit
-
-	if not string.find(unit, "nameplate") then
-		-- fixes weird distortion effects
-		-- but on nameplates it makes invisible, so only apply to unit frames
-		texture:SetDrawLayer("BORDER", 1)
-	end
+	-- draw behind other artifacts such as the frame selection border
+	texture:SetDrawLayer("ARTWORK", 1)
 
 	local container = {
 		UnitFrame = unitFrame,
@@ -79,7 +72,7 @@ local function Update(container, unit)
 	absorb:SetMinMaxValues(0, maxHealth)
 	absorb:SetValue(totalAbsorbs)
 
-	local glow = container.UnitFrame.overAbsorbGlow
+	local glow = container.OverAbsorbGlow
 
 	if not glow then
 		absorb:Show()
