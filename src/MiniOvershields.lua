@@ -42,6 +42,14 @@ local function EnsureContainer(unitFrame, healthBar, overAbsorbGlow)
 	texture:SetHorizTile(true)
 	texture:SetVertTile(true)
 
+	local unit = unitFrame.unit
+
+	if not string.find(unit, "nameplate") then
+		-- fixes weird distortion effects
+		-- but on nameplates it makes invisible, so only apply to unit frames
+		texture:SetDrawLayer("BORDER", 1)
+	end
+
 	local container = {
 		UnitFrame = unitFrame,
 		HealthBar = healthBar,
