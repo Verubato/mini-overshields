@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0
+
+- Better overshield logic.
+- Added support for Blizzard nameplates.
+
 ## 1.2.1
 
 Fixed absorbs showing on Blizzard nameplates as it didn't look good.
