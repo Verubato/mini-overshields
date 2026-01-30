@@ -32,8 +32,10 @@ local function EnsureContainer(unitFrame, healthBar, overAbsorbGlow)
 	absorb:SetAllPoints(healthBar)
 	absorb:SetReverseFill(true)
 	absorb:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Overlay")
+	-- put it above the health bar
+	absorb:SetFrameLevel(healthBar:GetFrameLevel() + 1)
 	-- draw behind other artifacts such as the frame selected border
-	absorb:SetFrameLevel(healthBar:GetFrameLevel())
+	absorb:SetFrameStrata(healthBar:GetFrameStrata())
 	absorb:SetStatusBarColor(1, 1, 1, 0.5)
 	absorb:Hide()
 
