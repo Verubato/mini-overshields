@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+
+- Fixed glow not moving with absorb overlay on player/target/focus frames.
+- Fixed weird distortion effect.
+
 ## 2.0.0
 
 - Better overshield logic.
