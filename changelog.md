@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.3
+
+Another potential fix for drawing underneath healtbars.
+
 ## 2.0.2
 
 Potential fix for drawing underneath healtbars.
