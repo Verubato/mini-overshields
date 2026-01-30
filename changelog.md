@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+
+Potential fix for drawingunderneath healtbars.
+
 ## 2.0.1
 
 - Fixed glow not moving with absorb overlay on player/target/focus frames.
