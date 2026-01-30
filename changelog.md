@@ -2,7 +2,7 @@
 
 ## 2.0.2
 
-Potential fix for drawingunderneath healtbars.
+Potential fix for drawing underneath healtbars.
 
 ## 2.0.1
 
