@@ -34,7 +34,12 @@ local function EnsureContainer(unitFrame, healthBar, overAbsorbGlow)
 	absorb:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Overlay")
 	-- don't draw above the health bar
 	absorb:SetFrameLevel(healthBar:GetFrameLevel())
-	absorb:SetFrameStrata(healthBar:GetFrameStrata())
+
+	-- not sure why this is happening for some users, perpaps another addon doing it
+	local strata = healthBar:GetFrameStrata()
+	strata = mini:IsSecret(strata) and "LOW" or strata
+
+	absorb:SetFrameStrata(strata)
 	absorb:SetStatusBarColor(1, 1, 1, 0.5)
 	absorb:Hide()
 
