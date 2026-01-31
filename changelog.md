@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.4
+
+Secret value handling fix.
+
 ## 2.0.3
 
 Another potential fix for drawing underneath healtbars.
