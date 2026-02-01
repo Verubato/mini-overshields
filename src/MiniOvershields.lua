@@ -1,8 +1,6 @@
 local _, addon = ...
 ---@type MiniFramework
 local mini = addon.Framework
----@type Scheduler
-local scheduler = addon.Scheduler
 ---@type Container[]
 local containers = {}
 local eventsFrame
@@ -59,9 +57,7 @@ local function EnsureContainer(unitFrame, healthBar, overAbsorbGlow)
 	containers[unitFrame] = container
 
 	if overAbsorbGlow then
-		scheduler:RunWhenCombatEnds(function()
-			ReanchorOverAbsorbGlow(container)
-		end)
+		ReanchorOverAbsorbGlow(container)
 	end
 
 	return container
@@ -163,13 +159,16 @@ local function UpdateCompactFrame(frame)
 	local container = EnsureContainer(frame, frame.healthBar, frame.overAbsorbGlow)
 	Update(container, unit)
 
-	scheduler:RunWhenCombatEnds(function()
-		if frame:IsForbidden() then
-			return
-		end
-
+	if container.OverAbsorbGlow then
 		ReanchorOverAbsorbGlow(container)
-	end, frame:GetName())
+
+		if frame.UpdateAnchors and not frame.MiniOvershieldsHooked then
+			hooksecurefunc(frame, "UpdateAnchors", function()
+				ReanchorOverAbsorbGlow(container)
+			end)
+			frame.MiniOvershieldsHooked = true
+		end
+	end
 end
 
 local function HookCompactUnitFrames()
@@ -193,8 +192,6 @@ local function OnEvent()
 end
 
 local function OnAddonLoaded()
-	addon.Scheduler:Init()
-
 	eventsFrame = CreateFrame("Frame")
 	eventsFrame:RegisterEvent("PLAYER_LOGIN")
 	eventsFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
