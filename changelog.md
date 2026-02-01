@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.5
+
+Fixed absorb glow losing position on nameplates.
+
 ## 2.0.4
 
 Secret value handling fix.
