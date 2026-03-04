@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.6
+
+Fixed errors with compound targets like "boss1target".
+
 ## 2.0.5
 
 Fixed absorb glow losing position on nameplates.
