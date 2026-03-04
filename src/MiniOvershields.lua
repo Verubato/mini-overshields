@@ -156,6 +156,12 @@ local function UpdateCompactFrame(frame)
 
 	local unit = frame.unit
 
+	-- Compound units (e.g. "raid1target", "boss1targetpet") contain a digit followed by a letter
+	-- unlike simple units where any digit is a trailing suffix.
+	if unit:match("%d%a") then
+		return
+	end
+
 	local container = EnsureContainer(frame, frame.healthBar, frame.overAbsorbGlow)
 	Update(container, unit)
 
