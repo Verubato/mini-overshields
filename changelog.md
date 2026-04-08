@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.7
+
+Secret value error handling fix.
+
 ## 2.0.6
 
 Fixed errors with compound targets like "boss1target".
