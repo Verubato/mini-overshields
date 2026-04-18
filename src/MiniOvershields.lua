@@ -150,7 +150,7 @@ local function UpdateBlizzardUnitFrame(unit)
 end
 
 local function UpdateCompactFrame(frame)
-	if not frame or issecretvalue(frame) or frame:IsForbidden() or not frame.healthBar or not frame.unit then
+	if not frame or mini:IsSecret(frame) or frame:IsForbidden() or not frame.healthBar or not frame.unit then
 		return
 	end
 
