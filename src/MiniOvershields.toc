@@ -2,7 +2,7 @@
 ## Title: MiniOvershields
 ## Notes: Shows overshields/absorbs on unit, player, and target frames.
 ## Author: Verz
-## Version: 2.0.7
+## Version: 2.0.8
 ## IconTexture: Interface\AddOns\MiniOvershields\Icon.blp
 ## X-Curse-Project-ID: 1429179
 

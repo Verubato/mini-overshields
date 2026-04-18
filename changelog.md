@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.8
+
+Secret value error for non-retail clients.
+
 ## 2.0.7
 
 Secret value error handling fix.
