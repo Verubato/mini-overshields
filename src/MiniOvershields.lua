@@ -4,6 +4,7 @@ local mini = addon.Framework
 ---@type Container[]
 local containers = {}
 local eventsFrame
+local PRD_KEY = "PersonalResourceDisplay"
 
 ---@param container Container
 local function ReanchorOverAbsorbGlow(container)
@@ -191,10 +192,68 @@ local function HookCompactUnitFrames()
 	end
 end
 
-local function OnEvent()
+---@return table? healthBar
+---@return table? overAbsorbGlow
+local function GetPersonalResourceHealthBar()
+	-- The personal resource display is only active when this CVar is enabled.
+	if GetCVar("nameplateShowSelf") ~= "1" then
+		return nil, nil
+	end
+
+	if
+		PersonalResourceDisplayFrame
+		and PersonalResourceDisplayFrame.HealthBarsContainer
+		and PersonalResourceDisplayFrame.HealthBarsContainer.healthBar
+	then
+		local healthBar = PersonalResourceDisplayFrame.HealthBarsContainer.healthBar
+		-- The PRD health bar uses the compact unit frame template and carries the
+		-- same overAbsorbGlow field that compact party/raid frames do.
+		return healthBar, healthBar.overAbsorbGlow
+	end
+
+	return nil, nil
+end
+
+local function UpdatePersonalResourceFrame()
+	local healthBar, overAbsorbGlow = GetPersonalResourceHealthBar()
+
+	if not healthBar then
+		-- If the bar is gone or the CVar is off, remove any cached container so
+		-- it is rebuilt cleanly next time the PRD is re-enabled.
+		containers[PRD_KEY] = nil
+		return
+	end
+
+	local container = containers[PRD_KEY]
+	if not container then
+		container = EnsureContainer(PRD_KEY, healthBar, overAbsorbGlow)
+	end
+
+	Update(container, "player")
+
+	-- Keep the glow anchored to the left edge of our absorb texture, exactly
+	-- as compact frames do. This must run every update because the absorb
+	-- StatusBar texture resizes as the absorb value changes.
+	if container.OverAbsorbGlow then
+		ReanchorOverAbsorbGlow(container)
+	end
+end
+
+local function OnEvent(_, event, cvarName)
+	if event == "CVAR_UPDATE" then
+		-- React to the player toggling the personal resource display on or off.
+		if cvarName == "nameplateShowSelf" then
+			UpdatePersonalResourceFrame()
+		end
+		return
+	end
+
 	UpdateBlizzardUnitFrame("player")
 	UpdateBlizzardUnitFrame("target")
 	UpdateBlizzardUnitFrame("focus")
+	-- Defer by one frame so Blizzard's own update has run and the glow
+	-- visibility is accurate before we read it.
+	C_Timer.After(0, UpdatePersonalResourceFrame)
 end
 
 local function OnAddonLoaded()
@@ -202,13 +261,16 @@ local function OnAddonLoaded()
 	eventsFrame:RegisterEvent("PLAYER_LOGIN")
 	eventsFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 	eventsFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	eventsFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	eventsFrame:RegisterEvent("CVAR_UPDATE")
 	eventsFrame:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player", "target", "focus")
 	eventsFrame:RegisterUnitEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", "player", "target", "focus")
 
 	-- wait for frames to be created
-	eventsFrame:SetScript("OnEvent", function(_, event)
+	eventsFrame:SetScript("OnEvent", function(_, event, ...)
 		if event == "PLAYER_LOGIN" then
 			HookCompactUnitFrames()
+			UpdatePersonalResourceFrame()
 
 			eventsFrame:UnregisterEvent("PLAYER_LOGIN")
 			eventsFrame:SetScript("OnEvent", OnEvent)
@@ -219,7 +281,7 @@ end
 mini:WaitForAddonLoad(OnAddonLoaded)
 
 ---@class Container
----@field UnitFrame table
+---@field UnitFrame table|string  -- string sentinel "PersonalResourceDisplay" is used for the PRD health bar
 ---@field HealthBar table
 ---@field Absorb table
----@field OverAbsorbGlow table
+---@field OverAbsorbGlow table?
