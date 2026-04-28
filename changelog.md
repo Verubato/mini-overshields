@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+Added Blizzard personal resource display support.
+
 ## 2.0.8
 
 Secret value error for non-retail clients.
