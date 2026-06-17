@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.1
+
+12.0.7 TOC bump.
+
 ## 2.1.0
 
 Added Blizzard personal resource display support.
