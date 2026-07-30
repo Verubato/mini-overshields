@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.2
+
+12.1 version support
+
 ## 2.1.1
 
 12.0.7 TOC bump.
