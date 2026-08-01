@@ -6,5 +6,5 @@
 ## IconTexture: Interface\AddOns\MiniOvershields\Icon.blp
 ## X-Curse-Project-ID: 1429179
 
-MiniFramework.lua
+Libs\MiniFramework\MiniFramework.xml
 MiniOvershields.lua
