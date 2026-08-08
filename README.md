@@ -18,13 +18,13 @@ Feedback and feature requests are more than welcome!
 
 ## Screenshots
 
-![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/ScreenshotUnitframe2.png)
+![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/Screenshots/Unitframe2.png)
 
-![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/ScreenshotUnitframe1.png)
+![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/Screenshots/Unitframe1.png)
 
-![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/ScreenshotNameplate2.png)
+![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/Screenshots/Nameplate2.png)
 
-![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/ScreenshotNameplate.png)
+![MiniOvershields screenshot](https://raw.githubusercontent.com/Verubato/mini-overshields/main/assets/Screenshots/Nameplate.png)
 
 ## Download
 
