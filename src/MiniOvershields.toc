@@ -1,4 +1,4 @@
-## Interface: 120100, 120007, 50504
+## Interface: 120100, 50504
 ## Title: MiniOvershields
 ## Notes: Shows overshields/absorbs on unit, player, and target frames.
 ## Author: Verz
