@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.5
+
+Reduced CPU use on the group frame updates the addon hooks.
+
 ## 2.2.4
 
 Added a Mini category so the addon groups with the other Mini addons in the addon list.
