@@ -4,6 +4,13 @@ local mini = addon.Framework
 ---@type Container[]
 local containers = {}
 local eventsFrame
+-- Whether the personal resource display cvar is on. Only CVAR_UPDATE changes it.
+local prdEnabled
+-- Whether a personal resource refresh is already waiting on the next frame.
+local personalResourceQueued = false
+-- Whether a unit token is a compound one, worked out once per token. The set of tokens is
+-- small and fixed, and this is asked on the hottest hook in the game.
+local compoundUnits = {}
 local PRD_KEY = "PersonalResourceDisplay"
 
 ---@param container Container
@@ -150,6 +157,19 @@ local function UpdateBlizzardUnitFrame(unit)
 	Update(container, unit)
 end
 
+---Compound units (e.g. "raid1target", "boss1targetpet") carry a digit followed by a letter,
+---unlike simple units where any digit is a trailing suffix.
+local function IsCompoundUnit(unit)
+	local known = compoundUnits[unit]
+
+	if known == nil then
+		known = unit:match("%d%a") ~= nil
+		compoundUnits[unit] = known
+	end
+
+	return known
+end
+
 local function UpdateCompactFrame(frame)
 	if not frame or mini:IsSecret(frame) or frame:IsForbidden() or not frame.healthBar or not frame.unit then
 		return
@@ -157,9 +177,7 @@ local function UpdateCompactFrame(frame)
 
 	local unit = frame.unit
 
-	-- Compound units (e.g. "raid1target", "boss1targetpet") contain a digit followed by a letter
-	-- unlike simple units where any digit is a trailing suffix.
-	if unit:match("%d%a") then
+	if IsCompoundUnit(unit) then
 		return
 	end
 
@@ -180,23 +198,24 @@ end
 
 local function HookCompactUnitFrames()
 	if CompactUnitFrame_UpdateAll then
-		hooksecurefunc("CompactUnitFrame_UpdateAll", function(frame)
-			UpdateCompactFrame(frame)
-		end)
+		hooksecurefunc("CompactUnitFrame_UpdateAll", UpdateCompactFrame)
 	end
 
 	if CompactUnitFrame_UpdateHealPrediction then
-		hooksecurefunc("CompactUnitFrame_UpdateHealPrediction", function(frame)
-			UpdateCompactFrame(frame)
-		end)
+		hooksecurefunc("CompactUnitFrame_UpdateHealPrediction", UpdateCompactFrame)
 	end
 end
 
 ---@return table? healthBar
 ---@return table? overAbsorbGlow
 local function GetPersonalResourceHealthBar()
-	-- The personal resource display is only active when this CVar is enabled.
-	if GetCVar("nameplateShowSelf") ~= "1" then
+	-- The personal resource display is only active when this CVar is enabled. Read on demand
+	-- and kept, because CVAR_UPDATE below is what changes the answer.
+	if prdEnabled == nil then
+		prdEnabled = GetCVar("nameplateShowSelf") == "1"
+	end
+
+	if not prdEnabled then
 		return nil, nil
 	end
 
@@ -239,21 +258,43 @@ local function UpdatePersonalResourceFrame()
 	end
 end
 
+local function OnPersonalResourceTick()
+	personalResourceQueued = false
+	UpdatePersonalResourceFrame()
+end
+
+---Refreshes the personal resource display a frame from now, once, however many events asked.
+---Absorb events arrive in bursts while a shield is being cast onto a target.
+local function QueuePersonalResourceUpdate()
+	if personalResourceQueued then
+		return
+	end
+
+	personalResourceQueued = true
+	-- Deferred so Blizzard's own update has run and the glow visibility is accurate.
+	C_Timer.After(0, OnPersonalResourceTick)
+end
+
 local function OnEvent(_, event, cvarName)
 	if event == "CVAR_UPDATE" then
 		-- React to the player toggling the personal resource display on or off.
 		if cvarName == "nameplateShowSelf" then
+			prdEnabled = nil
 			UpdatePersonalResourceFrame()
 		end
 		return
 	end
 
+	-- /console and ConsoleExec can move the cvar without a CVAR_UPDATE, so re-read it on a
+	-- world change rather than trusting the cache for the rest of the session.
+	if event == "PLAYER_ENTERING_WORLD" then
+		prdEnabled = nil
+	end
+
 	UpdateBlizzardUnitFrame("player")
 	UpdateBlizzardUnitFrame("target")
 	UpdateBlizzardUnitFrame("focus")
-	-- Defer by one frame so Blizzard's own update has run and the glow
-	-- visibility is accurate before we read it.
-	C_Timer.After(0, UpdatePersonalResourceFrame)
+	QueuePersonalResourceUpdate()
 end
 
 local function OnAddonLoaded()
