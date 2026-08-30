@@ -8,4 +8,5 @@
 ## X-Curse-Project-ID: 1429179
 
 Libs\MiniFramework\MiniFramework.xml
+Config.lua
 MiniOvershields.lua
