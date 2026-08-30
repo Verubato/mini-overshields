@@ -18,7 +18,10 @@ mini:WaitForAddonLoad(function()
 	-- A section rule with no settings under it reads as a page that failed to load.
 	mini:PanelHeader({
 		Parent = panel,
-		Description = "Shows overshields and absorbs on unit, player, and target frames.",
+		Lines = {
+			"Shows overshields and absorbs on unit, player, and target frames.",
+			"This addon has no settings, it simply works out of the box.",
+		},
 	})
 
 	mini:RegisterSlashCommand(category, panel, {
