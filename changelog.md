@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.6
+
+- UI improvements.
+- Added a settings page.
+
 ## 2.2.5
 
 Reduced CPU use on the group frame updates the addon hooks.

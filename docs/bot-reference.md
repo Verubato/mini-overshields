@@ -1,6 +1,6 @@
 # MiniOvershields - bot reference
 
-Version 2.2.5. Interface versions: 120100 (retail), 50504 (Mists of Pandaria Classic).
+Version 2.2.6. Interface versions: 120100 (retail), 50504 (Mists of Pandaria Classic).
 
 ## What it does
 
@@ -40,8 +40,13 @@ Unit Frames, custom nameplate addons, or any other unit frame replacement.
 
 ## Settings
 
-None. There are no options, no saved variables, and no slash commands.
-Install it and it works; remove it to turn it off.
+Open with a slash command or Options -> AddOns -> MiniOvershields. The panel
+is informational only: its subtitle says the addon has no settings and
+simply works out of the box. There are no options and no saved variables.
+
+## Slash commands
+
+/miniovershields, /minios, /mos - all open the settings panel.
 
 ## Troubleshooting
 
@@ -54,4 +59,5 @@ Install it and it works; remove it to turn it off.
 - "Nothing on my unit frames": the addon only draws on default Blizzard
   frames. If another addon replaces your frames or nameplates, MiniOvershields
   has nothing to draw on.
-- "Where are the options?": there are none by design.
+- "Where are the options?": Options -> AddOns -> MiniOvershields opens a
+  panel, but it is informational only; there is nothing to configure.
