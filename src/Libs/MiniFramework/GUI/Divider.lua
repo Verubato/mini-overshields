@@ -18,7 +18,7 @@ function M:Divider(options)
 	local line = GUI.DividerLine
 	local gold = GUI.DividerGold
 
-	local styled = GUI.IsStyled(options)
+	local styled = GUI.IsStyled(options, "Divider")
 
 	local container = CreateFrame("Frame", nil, options.Parent)
 	container:SetHeight(26)
@@ -51,6 +51,7 @@ function M:Divider(options)
 	end
 
 	label:SetPoint("CENTER", container, "CENTER")
+	container.Label = label
 
 	pixel.SetPoint(leftLine, "LEFT", container, "LEFT", 0, 0)
 	pixel.SetPoint(leftLine, "RIGHT", label, "LEFT", -8, 0)

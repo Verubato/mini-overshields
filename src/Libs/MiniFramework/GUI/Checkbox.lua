@@ -200,7 +200,7 @@ local function BuildStockCheckbox(options)
 
 	if labelText then
 		labelText:SetText(" " .. (options.LabelText or ""))
-		labelText:SetFontObject("GameFontNormal")
+		labelText:SetFontObject("GameFontHighlight")
 	end
 
 	checkbox:SetChecked(options.GetValue())
@@ -243,7 +243,7 @@ function M:Checkbox(options)
 
 	local checkbox
 
-	if GUI.IsStyled(options) then
+	if GUI.IsStyled(options, "Checkbox") then
 		checkbox = BuildToggle(options)
 	else
 		checkbox = BuildStockCheckbox(options)
