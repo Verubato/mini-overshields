@@ -157,13 +157,13 @@ local function UpdateBlizzardUnitFrame(unit)
 	Update(container, unit)
 end
 
----Compound units (e.g. "raid1target", "boss1targetpet") carry a digit followed by a letter,
----unlike simple units where any digit is a trailing suffix.
+---Compound units (e.g. "raid1target", "boss1targetpet") carry a digit followed by a letter.
+---A "pet" run right after the digit is the unit's own pet, not a nested token, so it stays simple.
 local function IsCompoundUnit(unit)
 	local known = compoundUnits[unit]
 
 	if known == nil then
-		known = unit:match("%d%a") ~= nil
+		known = unit:match("%d%a") ~= nil and unit:match("%d+pet$") == nil
 		compoundUnits[unit] = known
 	end
 

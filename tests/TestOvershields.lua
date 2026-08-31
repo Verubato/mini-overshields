@@ -62,9 +62,8 @@ fw.describe("MiniOvershields - IsCompoundUnit", function()
 		{ unit = "raid1", compound = false },
 		{ unit = "raid1target", compound = true },
 		{ unit = "boss1targetpet", compound = true },
-		-- Not literally nested, but the pattern is a bare digit-then-letter run, so this
-		-- matches the same as the deliberately compound cases above. Pinning today's answer.
-		{ unit = "raid1pet", compound = true },
+		-- A member's own pet, not a nested unit, even though a digit is still followed by a letter.
+		{ unit = "raid1pet", compound = false },
 	}
 
 	for _, case in ipairs(cases) do
