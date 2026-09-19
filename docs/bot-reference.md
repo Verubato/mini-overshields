@@ -1,6 +1,6 @@
 # MiniOvershields - bot reference
 
-Version 2.2.6. Interface versions: 120100 (retail), 16001 (Classic Beta 1.60), 50504 (Mists of Pandaria Classic).
+Version 2.2.7. Interface versions: 120100 (retail), 16001 (Classic Beta 1.60), 50504 (Mists of Pandaria Classic).
 
 ## What it does
 

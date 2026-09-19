@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.7
+
+Added WoW Forever support.
+
 ## 2.2.6
 
 - UI improvements.
