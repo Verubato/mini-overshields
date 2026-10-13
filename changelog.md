@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.8
+
+Updated for patch 12.1.5.
+
 ## 2.2.7
 
 Added WoW Forever support.
